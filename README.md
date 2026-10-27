@@ -3,6 +3,8 @@
 **Course**: BAMAT207 — Probability and Statistics  
 **Institution**: Vellore Institute of Technology (VIT), Vellore  
 **Live Application**: [https://hamspam.vercel.app](https://hamspam.vercel.app)  
+**Academic Report PDF**: [reports/HamSpam_Project_Report.pdf](reports/HamSpam_Project_Report.pdf)  
+**Report Source Script**: [reports/HamSpam_Project_Report_Source.py](reports/HamSpam_Project_Report_Source.py)  
 **Repository**: [https://github.com/SarveshS1407/HamSpam](https://github.com/SarveshS1407/HamSpam)  
 **Platform**: macOS (Apple Silicon M1 / ARM64 compatible) & Linux cloud hosts  
 **Backend**: Python 3.13, FastAPI, scikit-learn, pandas, NumPy, Uvicorn  
@@ -343,6 +345,37 @@ OK (17/17 Passed)
 - `test_07_predicted_probabilities_sum_to_one`: Verified $P(\text{Ham} \mid \text{Msg}) + P(\text{Spam} \mid \text{Msg}) = 1.0$.
 - `test_08_empty_and_whitespace_input_handling`: Verified prediction engine handles empty inputs gracefully.
 - `test_09_absent_word_zero_division_safety`: Verified division-by-zero resilience for out-of-vocabulary tokens.
+
+---
+
+## 10. Submission-Ready Academic Project Report (PDF)
+
+The complete academic project report is available inside the repository as a publication-ready 10-page A4 PDF document, along with its reproducible Python generator script:
+
+- **PDF Document**: [**`reports/HamSpam_Project_Report.pdf`**](reports/HamSpam_Project_Report.pdf)
+- **Generator Script**: [**`reports/HamSpam_Project_Report_Source.py`**](reports/HamSpam_Project_Report_Source.py)
+- **Report Documentation**: [**`reports/README.md`**](reports/README.md)
+
+### Report Page Structure Overview
+1. **Page 1 — Cover Page & Abstract**: Institutional banner (VIT Vellore), course credentials, title, subtitle, executive abstract card, 4 KPI badges (98.07% Accuracy, 95.12% Precision, 89.31% Recall, 92.13% F1), candidate metadata, and verification signet.
+2. **Page 2 — Executive Summary & Objectives**: SMS channel characteristics, 160-char constraints, smishing risks, alignment with BAMAT207 curriculum, and 4 project objectives.
+3. **Page 3 — Dataset Acquisition & Preprocessing**: UCI SMS Spam Collection (#228), 5,574 raw -> 403 duplicates eliminated -> 5,171 cleaned messages, 0 nulls, summary table, and embedded `outputs/class_distribution.png` (Figure 1).
+4. **Page 4 — Theoretical Probability & Bernoulli Modeling**: Discrete random variable $Y \in \{0, 1\}$, $p = 0.126281$, derivations of $E(Y) = p$, $\text{Var}(Y) = p(1-p) = 0.110334$, $\sigma(Y) = 0.332166$, and formal Bayes' Theorem derivation.
+5. **Page 5 — Word-Level Probability Analysis & Bayes Proof**: Word boundary tokenization (`\bword\b`) across 5 keywords (`free`, `prize`, `win`, `urgent`, `offer`), empirical contingency table, exact proof of identity ($|\Delta| \le 2.22 \times 10^{-16}$), and embedded `outputs/word_probability_chart.png` (Figure 2).
+6. **Page 6 — Machine Learning Methodology**: 80/20 stratified split ($N_{\text{train}} = 4,136$, $N_{\text{test}} = 1,035$), zero data leakage, CountVectorizer ($|V| = 7,297$), Multinomial Naive Bayes likelihood, Laplace smoothing ($\alpha = 1.0$), log-space transformations, and 5-stage pipeline diagram (Figure 3).
+7. **Page 7 — Experimental Results & Evaluation**: Performance metrics table (Accuracy: 98.07%, Precision: 95.12%, Recall: 89.31%, F1: 92.13%), confusion matrix breakdown ($TN=898$, $FP=6$, $FN=14$, $TP=117$), embedded `outputs/confusion_matrix.png` (Figure 4), and deep dive into the Class Imbalance Accuracy Paradox (87.34% trivial baseline vs genuine discriminative learning).
+8. **Page 8 — Full-Stack Architecture & Deployment**: FastAPI backend, React 18 / Tailwind / Recharts UI, Vercel deployment (`https://hamspam.vercel.app`), real-time test inference on canonical messages (100% confidence), and 17/17 automated tests.
+9. **Page 9 — Discussion, Limitations & Future Scope**: The "Naive" conditional independence paradox and Domingos & Pazzani (1997) optimality proof under 0-1 loss, qualitative error breakdown (6 FP, 14 FN), comparison table with discriminative classifiers, and future enhancements (BPE, online updating, transformers).
+10. **Page 10 — References & Academic Declaration**: Formal bibliography (Almeida et al. 2011, UCI #228, Domingos & Pazzani 1997, Pedregosa et al. 2011, Devore 2015), deliverable artifact links, mathematical notation glossary, and signed Academic Integrity Declaration.
+
+### How to Recompile the PDF Report
+```bash
+# Ensure report dependencies are installed in your virtual environment
+pip install reportlab pymupdf
+
+# Compile the 10-page academic PDF report
+python reports/HamSpam_Project_Report_Source.py
+```
 
 ---
 
