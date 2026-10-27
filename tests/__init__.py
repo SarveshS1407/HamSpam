@@ -1,0 +1,3 @@
+"""
+HamSpam Unit Test Suite
+"""

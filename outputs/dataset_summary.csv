@@ -1,0 +1,9 @@
+Metric,Value
+Cleaned Total Messages,5171
+Ham Messages,4518
+Spam Messages,653
+P(Ham),0.873719
+P(Spam),0.126281
+Expectation E(Y),0.126281
+Variance Var(Y),0.110334
+Std Dev Sigma(Y),0.332166

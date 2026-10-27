@@ -1,0 +1,27 @@
+# Python virtual environments & bytecode
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Local dataset files (automatically acquired at runtime)
+data/SMSSpamCollection
+data/*.zip
+data/*.tar.gz
+data/temp/
+
+# IDE & Editor configs
+.vscode/
+.idea/
