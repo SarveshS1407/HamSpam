@@ -14,6 +14,8 @@ import os
 import re
 from typing import Dict, List, Optional, Tuple
 
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive headless backend for server safety
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd

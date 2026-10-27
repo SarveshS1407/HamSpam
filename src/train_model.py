@@ -15,6 +15,8 @@ Implements:
 import os
 from typing import Any, Dict, Tuple
 
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive headless backend for server safety
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
