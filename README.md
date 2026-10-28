@@ -3,6 +3,7 @@
 **Course**: BAMAT207 — Probability and Statistics  
 **Institution**: Vellore Institute of Technology (VIT), Vellore  
 **Live Application**: [https://hamspam.vercel.app](https://hamspam.vercel.app)  
+**Google Colab (One-Click Viva Evaluation)**: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SarveshS1407/HamSpam/blob/main/notebooks/HamSpam_Colab_Evaluation.ipynb)  
 **Academic Report PDF**: [reports/HamSpam_Project_Report.pdf](reports/HamSpam_Project_Report.pdf)  
 **Report Source Script**: [reports/HamSpam_Project_Report_Source.py](reports/HamSpam_Project_Report_Source.py)  
 **Repository**: [https://github.com/SarveshS1407/HamSpam](https://github.com/SarveshS1407/HamSpam)  
@@ -52,6 +53,22 @@ Rather than treating text classification as a black-box problem, this project br
 - **Live Public Website**: [https://hamspam.vercel.app](https://hamspam.vercel.app)
 - **Local Server (Full-Stack)**: `http://localhost:8000` (FastAPI serving both the REST API and the compiled React frontend)
 - **Dual-Engine Inference**: The application queries the live FastAPI backend, with an embedded client-side Naive Bayes engine executing the exact mathematical log-sum-exp equation over the trained model parameters ($|\Delta| < 10^{-14}$) during backend cold-starts.
+
+---
+
+## ⚡ One-Click Google Colab Evaluation Notebook
+
+For academic project evaluation, viva presentations, or independent review, you can open and run the complete project in Google Colab with one click:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SarveshS1407/HamSpam/blob/main/notebooks/HamSpam_Colab_Evaluation.ipynb)
+
+- **Direct Colab Link**: [**`https://colab.research.google.com/github/SarveshS1407/HamSpam/blob/main/notebooks/HamSpam_Colab_Evaluation.ipynb`**](https://colab.research.google.com/github/SarveshS1407/HamSpam/blob/main/notebooks/HamSpam_Colab_Evaluation.ipynb)
+- **Comprehensive Analysis Notebook**: [**`https://colab.research.google.com/github/SarveshS1407/HamSpam/blob/main/notebooks/HamSpam_Analysis.ipynb`**](https://colab.research.google.com/github/SarveshS1407/HamSpam/blob/main/notebooks/HamSpam_Analysis.ipynb)
+
+### Showing Outputs During Evaluation (Zero Setup Required)
+1. **Instant Output Display**: When you open the Colab link, **all outputs, tables, and charts are already pre-computed and displayed**. You can immediately scroll through the results without having to run or wait for any cells.
+2. **Auto-Cloning & Dependencies**: If an evaluator asks you to execute a cell live (`Shift + Enter`) or run all cells (**Runtime &rarr; Run all**), Cell 1 automatically detects the Colab environment, clones the `HamSpam` repository, installs any missing packages (`ucimlrepo`), and configures the `src/` modules in under 5 seconds.
+3. **Interactive Prediction**: Cell 15 includes an interactive viva demonstration cell where you can type any custom SMS message and view its real-time posterior probabilities $P(\text{Spam} \mid \text{Msg})$ and $P(\text{Ham} \mid \text{Msg})$.
 
 ---
 
