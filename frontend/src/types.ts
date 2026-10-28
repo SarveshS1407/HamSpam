@@ -81,3 +81,69 @@ export interface PredictionResult {
   visual_indicator: string;
   explanation: string;
 }
+
+export interface DatasetSample {
+  id: number;
+  label: 'ham' | 'spam';
+  message: string;
+  length: number;
+  words: number;
+}
+
+export interface LengthDistributionBin {
+  bin: string;
+  ham: number;
+  spam: number;
+  ham_pct: number;
+  spam_pct: number;
+}
+
+export interface DatasetMeta {
+  overview: {
+    name: string;
+    uci_id: number;
+    uci_url: string;
+    doi: string;
+    authors: string;
+    license: string;
+    citation: string;
+    raw_count: number;
+    cleaned_count: number;
+    duplicates_pruned: number;
+    missing_values: number;
+    ham_count: number;
+    ham_pct: number;
+    spam_count: number;
+    spam_pct: number;
+    format: string;
+    columns: Array<{
+      name: string;
+      type: string;
+      values: string;
+      description: string;
+    }>;
+  };
+  length_stats: {
+    ham: {
+      mean_chars: number;
+      median_chars: number;
+      max_chars: number;
+      mean_words: number;
+      median_words: number;
+      max_words: number;
+    };
+    spam: {
+      mean_chars: number;
+      median_chars: number;
+      max_chars: number;
+      mean_words: number;
+      median_words: number;
+      max_words: number;
+    };
+    distribution: LengthDistributionBin[];
+  };
+  samples: {
+    ham: DatasetSample[];
+    spam: DatasetSample[];
+  };
+}

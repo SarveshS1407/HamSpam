@@ -1,5 +1,6 @@
-import { DatasetStats, WordProbabilitiesResponse, ModelEvaluation, PredictionResult } from './types';
+import { DatasetStats, WordProbabilitiesResponse, ModelEvaluation, PredictionResult, DatasetMeta } from './types';
 import modelData from './model_data.json';
+import datasetMeta from './dataset_meta.json';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -8,7 +9,7 @@ export async function fetchHealth(): Promise<{ status: string; model_loaded: boo
     const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(3000) });
     if (res.ok) return await res.json();
   } catch (err) {
-    // If backend is not available, report online based on verified embedded model artifact
+    // If backend is unreachable, client-side fallback is active
   }
   return { status: 'healthy', model_loaded: true };
 }
@@ -41,6 +42,10 @@ export async function fetchEvaluation(): Promise<ModelEvaluation> {
     // Fallback to verified test evaluation metrics
   }
   return modelData.evaluation as ModelEvaluation;
+}
+
+export async function fetchDatasetMeta(): Promise<DatasetMeta> {
+  return datasetMeta as DatasetMeta;
 }
 
 export async function predictSMS(message: string): Promise<PredictionResult> {
@@ -120,6 +125,64 @@ export function clientSidePredict(message: string): PredictionResult {
         ? `[ 🚨 SPAM ALERT | Confidence: ${(pSpam * 100).toFixed(1)}% ]`
         : `[ 🟢 LEGITIMATE HAM | Confidence: ${(pHam * 100).toFixed(1)}% ]`,
     explanation:
-      'Probabilities are model-estimated class likelihoods via Multinomial Naive Bayes using empirical word counts and Laplace smoothing, not absolute guarantees.',
+      'Probabilities are model-estimated posterior likelihoods under Multinomial Naive Bayes using empirical token counts and Laplace smoothing (α=1.0), not absolute guarantees.',
   };
+}
+
+export interface TokenImpact {
+  token: string;
+  count: number;
+  inVocab: boolean;
+  spamLogProb: number | null;
+  hamLogProb: number | null;
+  logOdds: number | null; // > 0 pushes toward spam, < 0 pushes toward ham
+  lean: 'spam' | 'ham' | 'neutral';
+}
+
+/**
+ * Inspect individual word tokens within a message and compute their log-odds contribution.
+ */
+export function inspectMessageTokens(message: string): TokenImpact[] {
+  if (!message || !message.trim()) return [];
+
+  const { vocabulary, feature_log_prob } = modelData.model_parameters;
+  const vocabMap = vocabulary as Record<string, number>;
+  const tokens = message.toLowerCase().match(/\b\w\w+\b/g) || [];
+
+  const counts: Record<string, number> = {};
+  for (const t of tokens) {
+    counts[t] = (counts[t] || 0) + 1;
+  }
+
+  const result: TokenImpact[] = [];
+  for (const [token, count] of Object.entries(counts)) {
+    if (token in vocabMap) {
+      const idx = vocabMap[token];
+      const spamLog = feature_log_prob[1][idx];
+      const hamLog = feature_log_prob[0][idx];
+      const logOdds = spamLog - hamLog;
+      result.push({
+        token,
+        count,
+        inVocab: true,
+        spamLogProb: Number(spamLog.toFixed(3)),
+        hamLogProb: Number(hamLog.toFixed(3)),
+        logOdds: Number(logOdds.toFixed(3)),
+        lean: logOdds > 0.5 ? 'spam' : logOdds < -0.5 ? 'ham' : 'neutral',
+      });
+    } else {
+      result.push({
+        token,
+        count,
+        inVocab: false,
+        spamLogProb: null,
+        hamLogProb: null,
+        logOdds: null,
+        lean: 'neutral',
+      });
+    }
+  }
+
+  // Sort by highest absolute log-odds impact
+  return result.sort((a, b) => Math.abs(b.logOdds || 0) - Math.abs(a.logOdds || 0));
 }

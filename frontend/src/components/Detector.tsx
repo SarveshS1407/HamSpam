@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { predictSMS } from '../api';
+import { predictSMS, inspectMessageTokens, TokenImpact } from '../api';
 import { PredictionResult } from '../types';
 import { 
   Send, 
@@ -7,38 +7,40 @@ import {
   Sparkles, 
   ShieldAlert, 
   ShieldCheck, 
-  Info, 
   AlertCircle,
-  CheckCircle2,
-  Clock
+  HelpCircle,
+  Layers,
+  ArrowRight,
+  Info
 } from 'lucide-react';
 
 export const Detector: React.FC = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
+  const [tokens, setTokens] = useState<TokenImpact[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const sampleMessages = [
     {
-      label: 'Spam Winner Sample',
+      label: 'Prize Draw Spam',
       type: 'spam',
       text: 'Congratulations! You have won a free prize. Claim now.',
     },
     {
-      label: 'Casual Lunch Sample',
+      label: 'Casual Lunch Ham',
       type: 'ham',
       text: 'Hey, are we meeting for lunch today?',
     },
     {
-      label: 'Urgent Draw Sample',
+      label: 'Urgent Bank Alert',
       type: 'spam',
-      text: 'URGENT! You have won a 1 week FREE membership in our £100,000 prize draw!',
+      text: 'URGENT! Your account requires verification. Call 0800123456 immediately to prevent suspension.',
     },
     {
-      label: 'Academic Inquiry Sample',
+      label: 'Academic Lecture Ham',
       type: 'ham',
-      text: 'Can you please send me the lecture slides for BAMAT207?',
+      text: 'Can you please send me the lecture notes and syllabus for BAMAT207?',
     },
   ];
 
@@ -47,6 +49,7 @@ export const Detector: React.FC = () => {
     if (!text.trim()) {
       setError('Please enter a valid SMS message to classify.');
       setResult(null);
+      setTokens([]);
       return;
     }
 
@@ -55,6 +58,8 @@ export const Detector: React.FC = () => {
     try {
       const res = await predictSMS(text);
       setResult(res);
+      const tokenAnalysis = inspectMessageTokens(text);
+      setTokens(tokenAnalysis);
     } catch (err: any) {
       setError(err.message || 'Failed to communicate with prediction service.');
     } finally {
@@ -70,63 +75,77 @@ export const Detector: React.FC = () => {
   const handleReset = () => {
     setMessage('');
     setResult(null);
+    setTokens([]);
     setError(null);
   };
+
+  const wordCount = message.trim() ? message.trim().split(/\s+/).length : 0;
+  const isSpam = result?.predicted_label?.toLowerCase() === 'spam';
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fadeIn">
       {/* Header */}
       <div className="space-y-2">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-mono">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Real-Time Inference Engine</span>
+          <span>Real-Time Inference Console</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           SMS Spam Classification Console
         </h1>
-        <p className="text-sm text-slate-400">
-          Enter any SMS message to compute estimated posterior probabilities P(Spam | Message) 
-          and P(Ham | Message) using the trained <strong>Multinomial Naive Bayes</strong> model.
+        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
+          Enter any SMS message to compute estimated posterior probabilities 
+          <strong> P(Spam | Message)</strong> and <strong>P(Ham | Message)</strong> using the 
+          trained <strong>Multinomial Naive Bayes</strong> classifier with Laplace smoothing (&alpha;=1.0).
         </p>
       </div>
 
-      {/* Main Classifier Card */}
-      <div className="bg-[#0b1324] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+      {/* Main Classifier Input Card */}
+      <div className="bg-white dark:bg-[#0b1324] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6 transition-colors">
         {/* Text Area */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span>INPUT MESSAGE</span>
-            <span>{message.length} characters</span>
+          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
+            <span>INPUT SMS MESSAGE</span>
+            <span>{message.length} chars · {wordCount} words</span>
           </div>
+
           <textarea
-            rows={4}
             value={message}
             onChange={(e) => {
               setMessage(e.target.value);
               if (error) setError(null);
             }}
-            placeholder="Type or paste an SMS message here (e.g., 'URGENT: Your account requires verification...')"
-            className="w-full bg-[#080d1a] border border-slate-700/80 rounded-xl p-4 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-all font-sans leading-relaxed"
+            placeholder="Type or paste an SMS message here (e.g., 'Free entry in 2 a weekly competition to win £1,000 cash...')."
+            rows={4}
+            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-sans text-sm sm:text-base resize-y transition-all"
           />
         </div>
 
+        {/* Validation Error Banner */}
+        {error && (
+          <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <div className="flex items-center space-x-3">
             <button
               onClick={() => handlePredict()}
-              disabled={loading || !message.trim()}
-              className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-medium text-sm transition-all shadow-lg shadow-indigo-600/25 active:scale-95 disabled:pointer-events-none"
+              disabled={loading}
+              className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-md shadow-indigo-600/25 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  <span>Computing Probabilities...</span>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Computing Posteriors...</span>
                 </>
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  <span>Detect Spam</span>
+                  <span>Analyze Message</span>
                 </>
               )}
             </button>
@@ -134,146 +153,178 @@ export const Detector: React.FC = () => {
             {message && (
               <button
                 onClick={handleReset}
-                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm transition-all border border-slate-700 flex items-center space-x-1.5"
+                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium transition-all"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Clear</span>
+                <span>Reset</span>
               </button>
             )}
           </div>
-
-          <div className="text-[11px] font-mono text-slate-500 flex items-center space-x-1">
-            <Clock className="w-3.5 h-3.5" />
-            <span>Inference latency: &lt; 5ms</span>
-          </div>
         </div>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-center space-x-3">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Sample Messages Quick Picker */}
-        <div className="pt-4 border-t border-slate-800/80 space-y-2.5">
-          <div className="text-xs font-mono text-slate-400">
-            LOAD OFFICIAL TEST SAMPLES:
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {/* Preset Sample Buttons */}
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+          <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block">
+            Or try a canonical test message:
+          </span>
+          <div className="flex flex-wrap gap-2">
             {sampleMessages.map((sample, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSampleClick(sample.text)}
-                className="text-left p-3 rounded-lg bg-slate-900 hover:bg-slate-800/80 border border-slate-800 transition-all group flex flex-col justify-between"
+                className={`inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                  sample.type === 'spam'
+                    ? 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-500/20'
+                    : 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/20'
+                }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-mono text-slate-400 font-semibold group-hover:text-indigo-400 transition-colors">
-                    {sample.label}
-                  </span>
-                  <span
-                    className={`text-[10px] font-mono uppercase px-1.5 py-0.5 rounded ${
-                      sample.type === 'spam'
-                        ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                        : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    }`}
-                  >
-                    Expected {sample.type}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 line-clamp-1 italic">
-                  "{sample.text}"
-                </p>
+                <span className={`w-1.5 h-1.5 rounded-full ${sample.type === 'spam' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+                <span>{sample.label}</span>
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Prediction Output Card */}
+      {/* Classification Result Card */}
       {result && result.is_valid && (
         <div
-          className={`rounded-2xl border p-6 sm:p-8 space-y-6 transition-all duration-300 ${
-            result.predicted_label === 'Spam'
-              ? 'bg-rose-950/20 border-rose-500/40 shadow-2xl shadow-rose-950/40'
-              : 'bg-emerald-950/20 border-emerald-500/40 shadow-2xl shadow-emerald-950/40'
+          className={`rounded-2xl p-6 sm:p-8 border shadow-lg space-y-6 transition-all animate-fadeIn ${
+            isSpam
+              ? 'bg-rose-50/80 dark:bg-[#160d16] border-rose-300 dark:border-rose-900/60'
+              : 'bg-emerald-50/80 dark:bg-[#0c1815] border-emerald-300 dark:border-emerald-900/60'
           }`}
         >
           {/* Status Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800/80">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800/60">
             <div className="flex items-center space-x-3">
-              {result.predicted_label === 'Spam' ? (
-                <div className="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                  <ShieldAlert className="w-7 h-7" />
-                </div>
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                  <ShieldCheck className="w-7 h-7" />
-                </div>
-              )}
+              <div
+                className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${
+                  isSpam ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white'
+                }`}
+              >
+                {isSpam ? <ShieldAlert className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
+              </div>
               <div>
-                <div className="text-xs font-mono uppercase text-slate-400 tracking-wider">
-                  CLASSIFICATION DECISION
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {isSpam ? 'Classified as SPAM' : 'Classified as HAM (Legitimate)'}
+                  </h3>
+                  <span
+                    className={`text-[11px] font-mono uppercase px-2 py-0.5 rounded-full font-bold ${
+                      isSpam
+                        ? 'bg-rose-200 dark:bg-rose-500/20 text-rose-800 dark:text-rose-300'
+                        : 'bg-emerald-200 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300'
+                    }`}
+                  >
+                    Class {result.predicted_class}
+                  </span>
                 </div>
-                <div
-                  className={`text-2xl font-bold font-mono ${
-                    result.predicted_label === 'Spam' ? 'text-rose-400' : 'text-emerald-400'
-                  }`}
-                >
-                  {result.predicted_label === 'Spam' ? '🚨 SPAM DETECTED' : '🟢 LEGITIMATE HAM'}
-                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                  {isSpam
+                    ? 'Unsolicited commercial, smishing, or promotional message.'
+                    : 'Personal, academic, or genuine operational correspondence.'}
+                </p>
               </div>
             </div>
 
-            <div className="text-right font-mono text-xs text-slate-400">
-              <div>Decision Threshold: τ = 0.50</div>
-              <div className="text-slate-300">
-                Confidence:{' '}
-                <strong className="text-white">
-                  {(
-                    (result.predicted_label === 'Spam' ? (result.p_spam ?? 0) : (result.p_ham ?? 0)) * 100
-                  ).toFixed(2)}
-                  %
-                </strong>
+            {/* Confidence Score Pill */}
+            <div className="text-right">
+              <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-white">
+                {isSpam
+                  ? `${((result.p_spam || 0) * 100).toFixed(1)}%`
+                  : `${((result.p_ham || 0) * 100).toFixed(1)}%`}
               </div>
+              <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase">
+                Model Confidence
+              </span>
             </div>
           </div>
 
-          {/* Probability Bar Visualization */}
+          {/* Calibrated Probability Breakdown Bar */}
           <div className="space-y-2">
-            <div className="flex justify-between text-xs font-mono font-semibold">
-              <span className="text-emerald-400">P(Ham | Message) = {((result.p_ham ?? 0) * 100).toFixed(2)}%</span>
-              <span className="text-rose-400">P(Spam | Message) = {((result.p_spam ?? 0) * 100).toFixed(2)}%</span>
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="text-emerald-700 dark:text-emerald-400">
+                P(Ham | Msg) = {((result.p_ham || 0) * 100).toFixed(2)}%
+              </span>
+              <span className="text-rose-700 dark:text-rose-400">
+                P(Spam | Msg) = {((result.p_spam || 0) * 100).toFixed(2)}%
+              </span>
             </div>
-
-            <div className="w-full h-4 rounded-full bg-slate-900 border border-slate-800 overflow-hidden flex">
+            <div className="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex shadow-inner">
               <div
-                style={{ width: `${(result.p_ham ?? 0) * 100}%` }}
-                className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-500"
+                style={{ width: `${(result.p_ham || 0) * 100}%` }}
+                className="bg-emerald-500 transition-all duration-500"
+                title={`P(Ham) = ${((result.p_ham || 0) * 100).toFixed(2)}%`}
               />
               <div
-                style={{ width: `${(result.p_spam ?? 0) * 100}%` }}
-                className="h-full bg-gradient-to-r from-rose-400 to-rose-600 transition-all duration-500"
+                style={{ width: `${(result.p_spam || 0) * 100}%` }}
+                className="bg-rose-500 transition-all duration-500"
+                title={`P(Spam) = ${((result.p_spam || 0) * 100).toFixed(2)}%`}
               />
             </div>
           </div>
 
-          {/* Message Text Inspection */}
-          <div className="bg-[#080d1a] border border-slate-800/80 rounded-xl p-4 font-mono text-xs space-y-1">
-            <span className="text-slate-500 uppercase tracking-wider text-[10px]">ANALYZED TEXT:</span>
-            <p className="text-slate-200 text-sm font-sans italic">
-              "{result.original_message}"
-            </p>
-          </div>
-
-          {/* Model Transparency Disclaimer */}
-          <div className="flex items-start space-x-2.5 text-xs text-slate-400 bg-slate-900/40 p-3.5 rounded-xl border border-slate-800/60">
-            <Info className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+          {/* Mathematical Disclaimer */}
+          <div className="p-3 rounded-xl bg-white/60 dark:bg-black/20 border border-slate-200 dark:border-slate-800/40 text-xs text-slate-600 dark:text-slate-400 space-y-1">
+            <div className="flex items-center space-x-1.5 font-medium text-slate-800 dark:text-slate-300">
+              <Info className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Statistical Meaning of the Probability Score:</span>
+            </div>
             <p className="leading-relaxed">
-              <strong>Probabilistic Notice:</strong> {result.explanation}
+              These percentages represent estimated class posteriors computed via Multinomial Naive Bayes using 
+              empirical word frequencies and Laplace add-one smoothing (&alpha;=1.0) on the 5,171 cleaned UCI messages. 
+              Under symmetric 0-1 loss, a message is flagged Spam if P(Spam | Msg) &ge; 0.50.
             </p>
           </div>
+
+          {/* Token Analysis Impact Table */}
+          {tokens.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center space-x-2 text-xs font-mono uppercase text-slate-700 dark:text-slate-300 font-bold">
+                <Layers className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Recognized Vocabulary Tokens & Log-Odds Impact:</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs font-mono border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+                  <thead className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 uppercase">
+                    <tr>
+                      <th className="p-2.5">Token</th>
+                      <th className="p-2.5">In Vocabulary</th>
+                      <th className="p-2.5">Spam Log-Prob</th>
+                      <th className="p-2.5">Ham Log-Prob</th>
+                      <th className="p-2.5">Log-Odds Impact</th>
+                      <th className="p-2.5">Polarity Lean</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white/70 dark:bg-slate-900/30">
+                    {tokens.map((t, i) => (
+                      <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                        <td className="p-2.5 font-bold text-slate-900 dark:text-white">{t.token}</td>
+                        <td className="p-2.5 text-slate-500">
+                          {t.inVocab ? <span className="text-emerald-600 dark:text-emerald-400">Yes</span> : <span className="text-slate-400">OOV (smoothed)</span>}
+                        </td>
+                        <td className="p-2.5 text-slate-600 dark:text-slate-400">{t.spamLogProb !== null ? t.spamLogProb : '—'}</td>
+                        <td className="p-2.5 text-slate-600 dark:text-slate-400">{t.hamLogProb !== null ? t.hamLogProb : '—'}</td>
+                        <td className="p-2.5 font-bold">
+                          {t.logOdds !== null ? (
+                            <span className={t.logOdds > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}>
+                              {t.logOdds > 0 ? `+${t.logOdds}` : t.logOdds}
+                            </span>
+                          ) : '0.000'}
+                        </td>
+                        <td className="p-2.5">
+                          {t.lean === 'spam' && <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-semibold">Pushes Spam</span>}
+                          {t.lean === 'ham' && <span className="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-semibold">Pushes Ham</span>}
+                          {t.lean === 'neutral' && <span className="text-slate-400">Neutral</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

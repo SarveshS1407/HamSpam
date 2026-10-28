@@ -1,0 +1,235 @@
+{
+  "overview": {
+    "name": "SMS Spam Collection Dataset",
+    "uci_id": 228,
+    "uci_url": "https://archive.ics.uci.edu/dataset/228/sms+spam+collection",
+    "doi": "10.24432/C5CC84",
+    "authors": "Tiago A. Almeida and Jos\u00e9 Mar\u00eda G\u00f3mez Hidalgo",
+    "license": "Creative Commons Attribution 4.0 International (CC BY 4.0) / Public Academic Domain",
+    "citation": "Almeida, T. A., Hidalgo, J. M. G., & Yamakami, A. (2011). Contributions to the Study of SMS Spam Filtering: New Collection and Results. ACM DocEng 2011.",
+    "raw_count": 5574,
+    "cleaned_count": 5171,
+    "duplicates_pruned": 403,
+    "missing_values": 0,
+    "ham_count": 4518,
+    "ham_pct": 87.3719,
+    "spam_count": 653,
+    "spam_pct": 12.6281,
+    "format": "Tab-Separated Values (TSV), UTF-8 text",
+    "columns": [
+      {
+        "name": "label",
+        "type": "string",
+        "values": "ham (0) / spam (1)",
+        "description": "Binary ground-truth classification target"
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "values": "SMS text string",
+        "description": "Raw unformatted SMS communication text"
+      }
+    ]
+  },
+  "length_stats": {
+    "ham": {
+      "mean_chars": 70.9,
+      "median_chars": 53,
+      "max_chars": 910,
+      "mean_words": 14.2,
+      "median_words": 11,
+      "max_words": 171
+    },
+    "spam": {
+      "mean_chars": 137.7,
+      "median_chars": 148,
+      "max_chars": 223,
+      "mean_words": 23.7,
+      "median_words": 25,
+      "max_words": 35
+    },
+    "distribution": [
+      {
+        "bin": "0-40 chars",
+        "ham": 1610,
+        "spam": 9,
+        "ham_pct": 35.65,
+        "spam_pct": 1.38
+      },
+      {
+        "bin": "41-80 chars",
+        "ham": 1534,
+        "spam": 38,
+        "ham_pct": 33.97,
+        "spam_pct": 5.82
+      },
+      {
+        "bin": "81-120 chars",
+        "ham": 642,
+        "spam": 77,
+        "ham_pct": 14.22,
+        "spam_pct": 11.79
+      },
+      {
+        "bin": "121-160 chars",
+        "ham": 539,
+        "spam": 476,
+        "ham_pct": 11.94,
+        "spam_pct": 72.89
+      },
+      {
+        "bin": "160+ chars",
+        "ham": 191,
+        "spam": 53,
+        "ham_pct": 4.23,
+        "spam_pct": 8.12
+      }
+    ]
+  },
+  "samples": {
+    "ham": [
+      {
+        "id": 1,
+        "label": "ham",
+        "message": "Go until jurong point, crazy.. Available only in bugis n great world la e buffet... Cine there got amore wat...",
+        "length": 111,
+        "words": 20
+      },
+      {
+        "id": 2,
+        "label": "ham",
+        "message": "Ok lar... Joking wif u oni...",
+        "length": 29,
+        "words": 6
+      },
+      {
+        "id": 5,
+        "label": "ham",
+        "message": "Nah I don't think he goes to usf, he lives around here though",
+        "length": 61,
+        "words": 13
+      },
+      {
+        "id": 7,
+        "label": "ham",
+        "message": "Even my brother is not like to speak with me. They treat me like aids patent.",
+        "length": 77,
+        "words": 16
+      },
+      {
+        "id": 11,
+        "label": "ham",
+        "message": "I'm gonna be home soon and i don't want to talk about this stuff anymore tonight, k? I've cried enough today.",
+        "length": 109,
+        "words": 21
+      },
+      {
+        "id": 15,
+        "label": "ham",
+        "message": "I HAVE A DATE ON SUNDAY WITH WILL!!",
+        "length": 35,
+        "words": 8
+      },
+      {
+        "id": 19,
+        "label": "ham",
+        "message": "Fine if that\u0092s the way u feel. That\u0092s the way its gota b",
+        "length": 56,
+        "words": 13
+      },
+      {
+        "id": 24,
+        "label": "ham",
+        "message": "Aft i finish my lunch then i go str down lor. Ard 3 smth lor. U finish ur lunch already?",
+        "length": 88,
+        "words": 20
+      },
+      {
+        "id": 29,
+        "label": "ham",
+        "message": "I'm back &amp; we're packing the car now, I'll let you know if there's room",
+        "length": 75,
+        "words": 15
+      },
+      {
+        "id": 34,
+        "label": "ham",
+        "message": "For fear of fainting with the of all that housework you just did? Quick have a cuppa",
+        "length": 84,
+        "words": 17
+      }
+    ],
+    "spam": [
+      {
+        "id": 3,
+        "label": "spam",
+        "message": "Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005. Text FA to 87121 to receive entry question(std txt rate)T&C's apply 08452810075over18's",
+        "length": 155,
+        "words": 28
+      },
+      {
+        "id": 6,
+        "label": "spam",
+        "message": "FreeMsg Hey there darling it's been 3 week's now and no word back! I'd like some fun you up for it still? Tb ok! XxX std chgs to send, \u00a31.50 to rcv",
+        "length": 147,
+        "words": 32
+      },
+      {
+        "id": 9,
+        "label": "spam",
+        "message": "WINNER!! As a valued network customer you have been selected to receivea \u00a3900 prize reward! To claim call 09061701461. Claim code KL341. Valid 12 hours only.",
+        "length": 157,
+        "words": 26
+      },
+      {
+        "id": 10,
+        "label": "spam",
+        "message": "Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free! Call The Mobile Update Co FREE on 08002986030",
+        "length": 154,
+        "words": 29
+      },
+      {
+        "id": 12,
+        "label": "spam",
+        "message": "SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575. Cost 150p/day, 6days, 16+ TsandCs apply Reply HL 4 info",
+        "length": 136,
+        "words": 26
+      },
+      {
+        "id": 13,
+        "label": "spam",
+        "message": "URGENT! You have won a 1 week FREE membership in our \u00a3100,000 Prize Jackpot! Txt the word: CLAIM to No: 81010 T&C www.dbuk.net LCCLTD POBOX 4403LDNW1A7RW18",
+        "length": 155,
+        "words": 26
+      },
+      {
+        "id": 20,
+        "label": "spam",
+        "message": "England v Macedonia - dont miss the goals/team news. Txt ur national team to 87077 eg ENGLAND to 87077 Try:WALES, SCOTLAND 4txt/\u00fa1.20 POBOXox36504W45WQ 16+",
+        "length": 155,
+        "words": 24
+      },
+      {
+        "id": 35,
+        "label": "spam",
+        "message": "Thanks for your subscription to Ringtone UK your mobile will be charged \u00a35/month Please confirm by replying YES or NO. If you reply NO you will not be charged",
+        "length": 158,
+        "words": 29
+      },
+      {
+        "id": 55,
+        "label": "spam",
+        "message": "SMS. ac Sptv: The New Jersey Devils and the Detroit Red Wings play Ice Hockey. Correct or Incorrect? End? Reply END SPTV",
+        "length": 120,
+        "words": 22
+      },
+      {
+        "id": 66,
+        "label": "spam",
+        "message": "As a valued customer, I am pleased to advise you that following recent review of your Mob No. you are awarded with a \u00a31500 Bonus Prize, call 09066364589",
+        "length": 152,
+        "words": 28
+      }
+    ]
+  }
+}
